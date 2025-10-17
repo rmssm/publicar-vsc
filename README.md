@@ -1,45 +1,50 @@
-# publicar-vsc README
+# ☁️ Publicar-VSC
 
+**Publicar-VSC** es una extensión para Visual Studio Code que añade un botón en la barra de estado para **publicar tus cambios automáticamente en un servidor remoto** (por ejemplo, mediante `rsync` o un script personalizado).
 
-## Features
+Ideal para desarrolladores que suben cambios con frecuencia y quieren hacerlo con un solo clic, sin tener que abrir una terminal ni escribir comandos manualmente.
 
-Plugin para publicar los cambios en el servidor
+---
 
-## Requirements
+## 🚀 Características
 
-Se ha de crear un archivo el la raiz del proyecto a subir con nombre publicar.sh
-Aquí en boceto de como debe configurarse:
+- Añade un **botón “☁️ Publicar”** en la barra inferior de VS Code.  
+- Ejecuta automáticamente un script o comando de publicación (`publicar.sh` por defecto).  
+- Muestra la salida directamente en la terminal integrada de VS Code.  
+- Compatible con **macOS**, **Linux** y **Windows (WSL)**.  
 
-publicar.sh->
+---
 
+## ⚙️ Instalación
+
+1. Crea un archivo llamado `publicar.sh``
+2. Aquí un ejemplo de configuración del archivo:
+
+- 
 #!/bin/bash
+\# publicar.sh — Subir cambios al servidor remoto
 
-# ==== CONFIGURACIÓN ====
-USUARIO="usuario"
-SERVIDOR="https://urlservidor.eu"
-PUERTO="22"
-DIRECTORIO_LOCAL="/Directorio/Local/A/Subir/"
-# El directorio local debe terminar con /
-# El directorio remoto debe terminar con /
-DIRECTORIO_REMOTO="/home/directorio/remoto/"
-ARCHIVO_EXCLUIDO="publicar.sh"  # nombre del script u otros archivos a excluir
-SSH_KEY="$HOME/.ssh/clave_ssh"
-# ========================
+\# Configura tus datos:
+SERVIDOR="usuario@tuservidor.com"
+RUTA_REMOTA="/var/www/html/"
+RUTA_LOCAL="$(pwd)/"
 
-# Sincronización con rsync
-rsync -avz \
-  -e "ssh -i $SSH_KEY -p $PUERTO" \
-  --delete \
-  --exclude "vendor/" \
-  --exclude "node_modules/" \
-  --exclude "MyFiles/" \
-  --exclude "$ARCHIVO_EXCLUIDO" \
-  --exclude ".git" \
-  --exclude ".DS_Store" \
-  --exclude "venv" \
-  --exclude ".vscode" \
-  "$DIRECTORIO_LOCAL" "${USUARIO}@${SERVIDOR}:$DIRECTORIO_REMOTO"
+echo "🚀 Iniciando publicación de cambios..."
+echo "🔁 Subiendo desde: $RUTA_LOCAL"
+echo "📡 Hacia: $SERVIDOR:$RUTA_REMOTA"
+echo
 
+\# Sincroniza los archivos con el servidor
+rsync -avz --delete \
+  --exclude '.git/' \
+  --exclude 'node_modules/' \
+  --exclude '.vscode/' \
+  "$RUTA_LOCAL" "$SERVIDOR:$RUTA_REMOTA"
 
-
-**Enjoy!**
+if [ $? -eq 0 ]; then
+  echo
+  echo "✅ Publicación completada correctamente."
+else
+  echo
+  echo "❌ Error durante la publicación."
+fi
